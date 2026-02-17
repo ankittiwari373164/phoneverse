@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">Author Profile | PhoneVerse</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .author-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 0;
+        }
+
+        .author-profile {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .author-avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 64px;
+            flex-shrink: 0;
+        }
+
+        .author-info h1 {
+            font-size: 42px;
+            margin-bottom: 10px;
+        }
+
+        .author-username {
+            font-size: 18px;
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+
+        .author-bio {
+            font-size: 16px;
+            opacity: 0.9;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .author-stats {
+            display: flex;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-item .number {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .stat-item .label {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .author-content {
+            padding: 60px 0;
+        }
+
+        .section-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-top">
+                <div class="logo">
+                    <a href="/">
+                        <h1>📱 PhoneVerse</h1>
+                        <p>Mobile Tech News</p>
+                    </a>
+                </div>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/category.html?cat=mobile-news">Mobile News</a></li>
+                    <li><a href="/category.html?cat=reviews">Reviews</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Author Hero -->
+    <section class="author-hero">
+        <div class="author-profile" id="authorProfile">
+            <div class="loading" style="color: white;">Loading author profile...</div>
+        </div>
+    </section>
+
+    <!-- Author Articles -->
+    <section class="author-content">
+        <div class="container">
+            <h2 class="section-title">📝 Articles by <span id="authorNameTitle">Author</span></h2>
+            
+            <div class="articles-grid" id="authorArticles">
+                <div class="loading">Loading articles...</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2026 PhoneVerse. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/common.js"></script>
+    <script>
+        let currentAuthor = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const username = urlParams.get('username');
+            
+            if (username) {
+                loadAuthor(username);
+            } else {
+                window.location.href = '/';
+            }
+        });
+
+        async function loadAuthor(username) {
+            try {
+                const response = await fetch(`/api/author/${username}`);
+                
+                if (!response.ok) {
+                    showNotFound();
+                    return;
+                }
+
+                const data = await response.json();
+                currentAuthor = data.author;
+                
+                displayAuthorProfile(data.author);
+                displayAuthorArticles(data.articles);
+                
+            } catch (error) {
+                console.error('Error loading author:', error);
+                showNotFound();
+            }
+        }
+
+        function displayAuthorProfile(author) {
+            document.title = `${author.full_name || author.username} | PhoneVerse`;
+            document.getElementById('pageTitle').textContent = `${author.full_name || author.username} | PhoneVerse`;
+            document.getElementById('authorNameTitle').textContent = author.full_name || author.username;
+
+            const profileDiv = document.getElementById('authorProfile');
+            
+            profileDiv.innerHTML = `
+                <div class="author-avatar">
+                    ${author.profile_image ? 
+                        `<img src="${author.profile_image}" alt="${author.full_name}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">` : 
+                        '👤'
+                    }
+                </div>
+                <div class="author-info">
+                    <h1>${escapeHtml(author.full_name || author.username)}</h1>
+                    <p class="author-username">@${escapeHtml(author.username)}</p>
+                    ${author.bio ? `<p class="author-bio">${escapeHtml(author.bio)}</p>` : ''}
+                    <div class="author-stats">
+                        <div class="stat-item">
+                            <div class="number">${author.article_count || 0}</div>
+                            <div class="label">Articles</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="number">${(author.total_views || 0).toLocaleString()}</div>
+                            <div class="label">Total Views</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="number">${formatJoinDate(author.created_at)}</div>
+                            <div class="label">Member Since</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function displayAuthorArticles(articles) {
+            const grid = document.getElementById('authorArticles');
+            
+            if (articles.length === 0) {
+                grid.innerHTML = '<p style="text-align: center; padding: 40px;">No published articles yet.</p>';
+                return;
+            }
+
+            grid.innerHTML = articles.map(article => `
+                <a href="/article.html?slug=${article.slug}" class="article-card">
+                    <div class="article-image">
+                        <img src="${article.featured_image || '/images/placeholder.png'}" 
+                             alt="${escapeHtml(article.title)}"
+                             onerror="this.src='/images/placeholder.png'">
+                        <span class="article-category">${formatCategory(article.category)}</span>
+                    </div>
+                    <div class="article-body">
+                        <h3>${escapeHtml(article.title)}</h3>
+                        <div class="article-meta">
+                            <span>📅 ${formatDate(article.published_at)}</span>
+                            <span>👁️ ${article.views || 0}</span>
+                        </div>
+                    </div>
+                </a>
+            `).join('');
+        }
+
+        function formatJoinDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short'
+            });
+        }
+
+        function showNotFound() {
+            document.getElementById('authorProfile').innerHTML = `
+                <div style="text-align: center; padding: 40px; color: white;">
+                    <h2>Author Not Found</h2>
+                    <p>The author you're looking for doesn't exist.</p>
+                    <a href="/" style="color: white; text-decoration: underline;">← Back to Home</a>
+                </div>
+            `;
+            document.getElementById('authorArticles').innerHTML = '';
+        }
+    </script>
+</body>
+</html>

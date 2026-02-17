@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">Category | PhoneVerse</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-top">
+                <div class="logo">
+                    <a href="/">
+                        <h1>📱 PhoneVerse</h1>
+                        <p>Mobile Tech News</p>
+                    </a>
+                </div>
+                <button class="search-btn" onclick="toggleSearch()">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                </button>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/category.html?cat=mobile-news">Mobile News</a></li>
+                    <li><a href="/category.html?cat=reviews">Reviews</a></li>
+                    <li><a href="/category.html?cat=android-updates">Android</a></li>
+                    <li><a href="/category.html?cat=iphone-news">iPhone</a></li>
+                    <li><a href="/category.html?cat=guides">Guides</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Search Overlay -->
+    <div class="search-overlay" id="searchOverlay">
+        <button class="close-search" onclick="toggleSearch()">✕</button>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search articles...">
+            <div class="search-results" id="searchResults"></div>
+        </div>
+    </div>
+
+    <!-- Category Header -->
+    <section class="category-header">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="/">Home</a>
+                <span>/</span>
+                <span id="categoryBreadcrumb">Loading...</span>
+            </div>
+            <h1 id="categoryTitle">Loading...</h1>
+            <p id="categoryDescription">Browse articles in this category</p>
+            <div class="category-stats" id="categoryStats">
+                <span id="articleCount">0 articles</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Articles Grid -->
+    <section class="category-articles">
+        <div class="container">
+            <div class="articles-grid" id="categoryArticles">
+                <div class="article-card skeleton-card"></div>
+                <div class="article-card skeleton-card"></div>
+                <div class="article-card skeleton-card"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2026 PhoneVerse. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/common.js"></script>
+    <script src="/js/category.js"></script>
+</body>
+</html>

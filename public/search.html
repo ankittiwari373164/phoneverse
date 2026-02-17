@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">Search Results | PhoneVerse</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-top">
+                <div class="logo">
+                    <a href="/">
+                        <h1>📱 PhoneVerse</h1>
+                        <p>Mobile Tech News</p>
+                    </a>
+                </div>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/category.html?cat=mobile-news">Mobile News</a></li>
+                    <li><a href="/category.html?cat=reviews">Reviews</a></li>
+                    <li><a href="/category.html?cat=android-updates">Android</a></li>
+                    <li><a href="/category.html?cat=iphone-news">iPhone</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Search Header -->
+    <section class="search-header">
+        <div class="container">
+            <h1>🔍 Search Results</h1>
+            <div class="search-box">
+                <input type="text" id="searchQuery" placeholder="Search articles...">
+                <button onclick="performSearch()">Search</button>
+            </div>
+            <p id="searchInfo">Loading results...</p>
+        </div>
+    </section>
+
+    <!-- Search Results -->
+    <section class="search-results-section">
+        <div class="container">
+            <div class="articles-grid" id="searchResults">
+                <div class="loading">Searching...</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2026 PhoneVerse. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/common.js"></script>
+    <script>
+        let currentQuery = '';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            currentQuery = urlParams.get('q') || '';
+            
+            if (currentQuery) {
+                document.getElementById('searchQuery').value = currentQuery;
+                performSearch();
+            }
+        });
+
+        async function performSearch() {
+            const query = document.getElementById('searchQuery').value.trim();
+            
+            if (query.length < 2) {
+                alert('Please enter at least 2 characters');
+                return;
+            }
+
+            currentQuery = query;
+            
+            // Update URL
+            window.history.pushState({}, '', `/search.html?q=${encodeURIComponent(query)}`);
+            
+            const resultsDiv = document.getElementById('searchResults');
+            const infoDiv = document.getElementById('searchInfo');
+            
+            resultsDiv.innerHTML = '<div class="loading">Searching...</div>';
+            infoDiv.textContent = `Searching for "${query}"...`;
+
+            try {
+                const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+                const results = await response.json();
+
+                infoDiv.textContent = `Found ${results.length} results for "${query}"`;
+
+                if (results.length === 0) {
+                    resultsDiv.innerHTML = `
+                        <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px;">
+                            <h3>No Results Found</h3>
+                            <p>Try different keywords or browse our categories</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                resultsDiv.innerHTML = results.map(article => `
+                    <a href="/article.html?slug=${article.slug}" class="article-card">
+                        <div class="article-image">
+                            <img src="${article.featured_image || '/images/placeholder.png'}" 
+                                 alt="${escapeHtml(article.title)}"
+                                 onerror="this.src='/images/placeholder.png'">
+                            <span class="article-category">${formatCategory(article.category)}</span>
+                        </div>
+                        <div class="article-body">
+                            <h3>${highlightText(article.title, query)}</h3>
+                            <div class="article-meta">
+                                <span>📅 ${formatDate(article.published_at)}</span>
+                            </div>
+                        </div>
+                    </a>
+                `).join('');
+
+            } catch (error) {
+                console.error('Search error:', error);
+                resultsDiv.innerHTML = '<div class="error">Search failed. Please try again.</div>';
+            }
+        }
+
+        function highlightText(text, query) {
+            const regex = new RegExp(`(${query})`, 'gi');
+            return text.replace(regex, '<mark>$1</mark>');
+        }
+    </script>
+</body>
+</html>

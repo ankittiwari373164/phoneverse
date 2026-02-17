@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhoneVerse - Latest Mobile Technology News & Reviews</title>
+    <meta name="description" content="Stay updated with latest smartphone news, mobile reviews, and tech updates. Your trusted source for mobile technology.">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <!-- Breaking News Bar -->
+    <div class="breaking-bar">
+        <div class="container">
+            <span class="breaking-label">🔥 BREAKING</span>
+            <div class="breaking-scroll" id="breakingNews">
+                <span>Loading latest news...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-top">
+                <div class="logo">
+                    <a href="/">
+                        <h1>📱 PhoneVerse</h1>
+                        <p>Mobile Tech News</p>
+                    </a>
+                </div>
+                
+                <div class="header-actions">
+                    <button class="search-btn" onclick="toggleSearch()" aria-label="Search">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                    </button>
+                    <button class="menu-toggle" onclick="toggleMobileMenu()" aria-label="Menu">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                </div>
+            </div>
+
+            <nav class="main-nav" id="mainNav">
+                <ul>
+                    <li><a href="/" class="active">Home</a></li>
+                    <li><a href="/category.html?cat=mobile-news">Mobile News</a></li>
+                    <li><a href="/category.html?cat=reviews">Reviews</a></li>
+                    <li><a href="/category.html?cat=android-updates">Android</a></li>
+                    <li><a href="/category.html?cat=iphone-news">iPhone</a></li>
+                    <li><a href="/category.html?cat=comparisons">Compare</a></li>
+                    <li><a href="/category.html?cat=guides">Guides</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Search Overlay -->
+    <div class="search-overlay" id="searchOverlay">
+        <button class="close-search" onclick="toggleSearch()">✕</button>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search articles..." autofocus>
+            <div class="search-results" id="searchResults"></div>
+        </div>
+    </div>
+
+    <!-- Hero Featured Article -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="hero-grid" id="heroSection">
+                <div class="skeleton-loader" style="height: 500px;"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Category Navigation -->
+    <section class="quick-categories">
+        <div class="container">
+            <div class="category-pills">
+                <a href="/category.html?cat=mobile-news" class="pill">📱 Mobile News</a>
+                <a href="/category.html?cat=reviews" class="pill">⭐ Reviews</a>
+                <a href="/category.html?cat=android-updates" class="pill">🤖 Android</a>
+                <a href="/category.html?cat=iphone-news" class="pill">🍎 iPhone</a>
+                <a href="/category.html?cat=comparisons" class="pill">⚖️ Compare</a>
+                <a href="/category.html?cat=guides" class="pill">📚 Guides</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Latest Articles Section -->
+    <section class="news-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Latest Articles</h2>
+                <div class="view-options">
+                    <button class="filter-btn active" data-category="all">All</button>
+                    <button class="filter-btn" data-category="mobile-news">📱 News</button>
+                    <button class="filter-btn" data-category="reviews">⭐ Reviews</button>
+                    <button class="filter-btn" data-category="android-updates">🤖 Android</button>
+                    <button class="filter-btn" data-category="iphone-news">🍎 iPhone</button>
+                </div>
+            </div>
+
+            <div class="articles-grid" id="articlesGrid">
+                <!-- Skeleton loaders -->
+                <div class="article-card skeleton-card"></div>
+                <div class="article-card skeleton-card"></div>
+                <div class="article-card skeleton-card"></div>
+                <div class="article-card skeleton-card"></div>
+                <div class="article-card skeleton-card"></div>
+                <div class="article-card skeleton-card"></div>
+            </div>
+
+            <div class="load-more-section">
+                <button class="load-more-btn" id="loadMoreBtn" onclick="loadMore()">
+                    Load More Articles
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trending Section -->
+    <section class="trending-section">
+        <div class="container">
+            <h2>🔥 Trending Now</h2>
+            <div class="trending-grid" id="trendingGrid">
+                <div class="skeleton-loader"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="newsletter-section">
+        <div class="container">
+            <div class="newsletter-box">
+                <h2>📧 Stay Updated</h2>
+                <p>Get the latest mobile tech news delivered to your inbox</p>
+                <form class="newsletter-form" onsubmit="subscribeNewsletter(event)">
+                    <input type="email" placeholder="Enter your email" required>
+                    <button type="submit">Subscribe</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3>📱 PhoneVerse</h3>
+                    <p>Your trusted source for mobile technology news, reviews, and updates. We bring you the latest in smartphones, tablets, and mobile innovation.</p>
+                    <div class="social-links">
+                        <a href="#" title="Twitter" aria-label="Twitter">🐦</a>
+                        <a href="#" title="Facebook" aria-label="Facebook">📘</a>
+                        <a href="#" title="Instagram" aria-label="Instagram">📷</a>
+                        <a href="#" title="YouTube" aria-label="YouTube">▶️</a>
+                    </div>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Categories</h4>
+                    <ul>
+                        <li><a href="/category.html?cat=mobile-news">Mobile News</a></li>
+                        <li><a href="/category.html?cat=reviews">Reviews</a></li>
+                        <li><a href="/category.html?cat=android-updates">Android Updates</a></li>
+                        <li><a href="/category.html?cat=iphone-news">iPhone News</a></li>
+                        <li><a href="/category.html?cat=comparisons">Comparisons</a></li>
+                        <li><a href="/category.html?cat=guides">Guides</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="/about.html">About Us</a></li>
+                        <li><a href="/contact.html">Contact</a></li>
+                        <li><a href="/privacy.html">Privacy Policy</a></li>
+                        <li><a href="/terms.html">Terms of Service</a></li>
+                        <li><a href="/disclaimer.html">Disclaimer</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Popular Tags</h4>
+                    <div class="tag-cloud">
+                        <a href="/search.html?q=Samsung" class="tag">Samsung</a>
+                        <a href="/search.html?q=iPhone" class="tag">iPhone</a>
+                        <a href="/search.html?q=Android" class="tag">Android</a>
+                        <a href="/search.html?q=OnePlus" class="tag">OnePlus</a>
+                        <a href="/search.html?q=Google Pixel" class="tag">Pixel</a>
+                        <a href="/search.html?q=5G" class="tag">5G</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 PhoneVerse. All rights reserved.</p>
+                <p>Made with ❤️ for tech enthusiasts</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button class="back-to-top" id="backToTop" onclick="scrollToTop()">
+        ↑
+    </button>
+
+    <script src="/js/common.js"></script>
+    <script src="/js/main.js"></script>
+</body>
+</html>
