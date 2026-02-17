@@ -30,20 +30,26 @@ let authSystem;
 async function connectDB() {
     try {
         const isProduction = CONFIG.NODE_ENV === 'production';
+        const useSSL = process.env.DB_SSL === 'true';
 
         db = await mysql.createConnection({
             host: CONFIG.DB_HOST,
+            port: parseInt(process.env.DB_PORT) || 3306,
             user: CONFIG.DB_USER,
             password: CONFIG.DB_PASS,
             database: CONFIG.DB_NAME,
-            ssl: isProduction ? { rejectUnauthorized: true } : false,
-            connectTimeout: 60000
+            ssl: useSSL ? { rejectUnauthorized: false } : false,
+            connectTimeout: 60000,
+            // Clever Cloud specific settings
+            multipleStatements: false,
+            timezone: '+00:00'
         });
 
-        console.log('✅ Database connected');
+        console.log('✅ Database connected (Clever Cloud MySQL)');
         await db.execute('SELECT 1');
 
-        // Keep DB connection alive every 30 seconds
+        // Keep connection alive every 25 seconds
+        // (Clever Cloud disconnects idle connections after 30s)
         setInterval(async () => {
             try {
                 await db.execute('SELECT 1');
@@ -55,7 +61,7 @@ async function connectDB() {
                     console.error('❌ Reconnect failed:', reconnectErr.message);
                 }
             }
-        }, 30000);
+        }, 25000);
 
     } catch (error) {
         console.error('❌ Database connection failed:', error.message);
