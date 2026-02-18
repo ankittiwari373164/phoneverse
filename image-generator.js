@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { createCanvas, loadImage } = require('skia-canvas');
+const { createCanvas, registerFont } = require('canvas');
 
 class ImageGenerator {
     constructor() {
