@@ -4,8 +4,8 @@ class OpenRouterRewriter {
     constructor(apiKey) {
         this.apiKey = apiKey;
         this.apiUrl = 'https://openrouter.ai/api/v1/chat/completions';
-        // Free model: google/gemma-2-9b-it:free (FREE FOREVER)
-        this.model = 'google/gemma-2-9b-it:free';
+        // Updated free model that works: meta-llama/llama-3.2-3b-instruct:free
+        this.model = 'meta-llama/llama-3.2-3b-instruct:free';
     }
 
     async rewriteWithPersonality(originalTitle, originalContent, category) {
