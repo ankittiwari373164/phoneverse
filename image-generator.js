@@ -14,29 +14,14 @@ class ImageGenerator {
 
     /**
      * Get a featured image for an article
-     * Uses free CDN services - always works, never fails
+     * Uses Unsplash for topic-specific, relevant images
      */
     async createFeaturedImage(title, category) {
-        // Use Lorem Picsum for consistent, beautiful images
-        // Alternative: Use Unsplash for topic-specific images
-        
-        const useMethod = 'picsum'; // Options: 'picsum' or 'unsplash'
-        
-        if (useMethod === 'picsum') {
-            // Lorem Picsum: Random beautiful images with cache
-            // Benefits: Faster, more consistent, better caching
-            const imageId = this.getImageIdFromTitle(title);
-            const url = `https://picsum.photos/id/${imageId}/1344/768`;
-            console.log(`✅ Image URL: ${url.substring(0, 50)}...`);
-            return url;
-        } else {
-            // Unsplash: Topic-specific images
-            // Benefits: More relevant to article content
-            const topic = this.getCategoryTopic(category, title);
-            const url = `https://source.unsplash.com/1344x768/?${topic}`;
-            console.log(`✅ Image URL: ${url}`);
-            return url;
-        }
+        // Use Unsplash for topic-specific images
+        const topic = this.getCategoryTopic(category, title);
+        const url = `https://source.unsplash.com/1344x768/?${topic}`;
+        console.log(`✅ Image for "${title.substring(0, 40)}..." → ${topic}`);
+        return url;
     }
 
     /**
