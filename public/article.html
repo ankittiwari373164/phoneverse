@@ -1,234 +1,479 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Read the latest mobile tech news">
     <title>Article - PhoneVerse</title>
     <link rel="stylesheet" href="/css/styles.css">
-</head>
-
-<body>
-    <!-- Your header/nav here -->
-    <!-- Header (Same as homepage) -->
-    <header class="header">
-        <div class="container">
-            <div class="header-top">
-                <div class="logo"> <a href="/">
-                        <h1>📱 PhoneVerse</h1>
-                        <p>Mobile Tech News</p>
-                    </a> </div> <button class="search-btn" onclick="toggleSearch()"> <svg width="20" height="20"
-                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <path d="m21 21-4.35-4.35"></path>
-                    </svg> </button>
-            </div>
-            <nav class="main-nav">
-                <ul>
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/category.html?cat=mobile-news">Mobile News</a></li>
-                    <li><a href="/category.html?cat=reviews">Reviews</a></li>
-                    <li><a href="/category.html?cat=android-updates">Android</a></li>
-                    <li><a href="/category.html?cat=iphone-news">iPhone</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header> <!-- Search Overlay -->
-    <div class="search-overlay" id="searchOverlay"> <button class="close-search" onclick="toggleSearch()">✕</button>
-        <div class="search-container"> <input type="text" id="searchInput" placeholder="Search articles...">
-            <div class="search-results" id="searchResults"></div>
-        </div>
-    </div>
-
-    <article id="article-container" class="article-page">
-        <div class="article-header">
-            <!-- Featured Image - This is what needs to be fixed -->
-            <img id="article-image" src="https://source.unsplash.com/1344x768/?smartphone,technology"
-                alt="Article Image" style="width: 100%; height: auto; max-height: 500px; object-fit: cover;">
-
-            <div class="article-meta">
-                <span id="article-category"></span>
-                <h1 id="article-title"></h1>
-                <div class="meta-info">
-                    <span id="article-date"></span>
-                    <span id="article-views"></span>
-                    <span id="article-author"></span>
-                </div>
-            </div>
-        </div>
-
-        <div id="article-content" class="article-body"></div>
-    </article>
-
-    <!-- CRITICAL: This script loads the article data -->
-    <script>
-console.log('📰 Article page loaded');
-
-// Get slug from URL
-const urlParams = new URLSearchParams(window.location.search);
-const slug = urlParams.get('slug');
-
-if (!slug) {
-    console.error('❌ No slug in URL');
-    showError('Article not found', 'No article specified');
-} else {
-    console.log(`🔍 Loading article: ${slug}`);
-    loadArticle(slug);
-}
-
-async function loadArticle(slug) {
-    try {
-        console.log(`📡 Fetching article from API...`);
-        
-        // ✅ CORRECT endpoint: /api/articles/:slug (with 's')
-        const response = await fetch(`/api/articles/${slug}`);
-        
-        console.log(`📊 Response status: ${response.status}`);
-        
-        if (!response.ok) {
-            if (response.status === 404) {
-                throw new Error('Article not found');
-            }
-            throw new Error(`HTTP ${response.status}`);
+    <style>
+        /* Critical CSS */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
         
-        const article = await response.json();
-        console.log('✅ Article loaded:', article.title);
-        console.log('🖼️  Image URL:', article.featured_image);
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
         
-        renderArticle(article);
+        /* Header */
+        .header {
+            background: #fff;
+            border-bottom: 1px solid #e0e0e0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
         
-    } catch (error) {
-        console.error('❌ Error loading article:', error);
-        showError('Error Loading Article', error.message);
-    }
-}
-
-function renderArticle(article) {
-    // Set title
-    document.title = `${article.title} - PhoneVerse`;
-    
-    const titleEl = document.getElementById('article-title') || 
-                   document.querySelector('h1');
-    if (titleEl) {
-        titleEl.textContent = article.title;
-    }
-    
-    // Set category
-    const categoryEl = document.getElementById('article-category') || 
-                      document.querySelector('.category-badge');
-    if (categoryEl) {
-        categoryEl.textContent = article.category;
-    }
-    
-    // Set meta info
-    const dateEl = document.getElementById('article-date');
-    if (dateEl) {
-        dateEl.textContent = formatDate(article.published_at);
-    }
-    
-    const viewsEl = document.getElementById('article-views');
-    if (viewsEl) {
-        viewsEl.textContent = `${article.views || 0} views`;
-    }
-    
-    const authorEl = document.getElementById('article-author');
-    if (authorEl) {
-        authorEl.textContent = article.author || 'Tech Editor';
-    }
-    
-    // Set content
-    const contentEl = document.getElementById('article-content') || 
-                     document.querySelector('.article-body');
-    if (contentEl) {
-        contentEl.innerHTML = article.content;
-    }
-    
-    // ✅ Set featured image
-    const imageEl = document.getElementById('article-image') || 
-                   document.querySelector('.featured-image img') ||
-                   document.querySelector('article img');
-    
-    if (imageEl) {
-        const imageUrl = article.featured_image || 
-                        'https://source.unsplash.com/1344x768/?smartphone,technology';
+        .logo-section {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+        }
         
-        console.log(`🖼️  Setting image: ${imageUrl}`);
-        imageEl.src = imageUrl;
-        imageEl.alt = article.title;
-        imageEl.style.display = 'block';
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #4285f4;
+            font-size: 28px;
+            font-weight: bold;
+        }
         
-        imageEl.onerror = function() {
-            console.error('❌ Image failed, using fallback');
-            this.src = 'https://source.unsplash.com/1344x768/?smartphone,technology';
-        };
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            font-size: 32px;
+        }
         
-        imageEl.onload = function() {
-            console.log('✅ Image loaded successfully');
-        };
-    } else {
-        console.warn('⚠️  No image element found');
-    }
-    
-    console.log('✅ Article rendered to page');
-}
-
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diff = now - date;
-    const minutes = Math.floor(diff / 60000);
-    const hours = Math.floor(diff / 3600000);
-    const days = Math.floor(diff / 86400000);
-    
-    if (minutes < 60) return `${minutes}m ago`;
-    if (hours < 24) return `${hours}h ago`;
-    return `${days}d ago`;
-}
-
-function showError(title, message) {
-    document.body.innerHTML = `
-        <div style="padding: 40px; text-align: center;">
-            <h1>${title}</h1>
-            <p>${message}</p>
-            <a href="/" style="color: #4285f4;">← Back to Home</a>
+        .tagline {
+            color: #666;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* Navigation */
+        .nav {
+            background: #fff;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            padding: 0 20px;
+            overflow-x: auto;
+        }
+        
+        .nav-menu li {
+            margin-right: 30px;
+        }
+        
+        .nav-menu a {
+            display: block;
+            padding: 15px 0;
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        /* Article Container */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .article-page {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+        
+        /* Featured Image */
+        .article-header {
+            position: relative;
+        }
+        
+        .featured-image {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+        }
+        
+        .featured-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .article-meta-overlay {
+            padding: 30px;
+        }
+        
+        .category-badge {
+            display: inline-block;
+            background: #4285f4;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        h1 {
+            font-size: 32px;
+            line-height: 1.3;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .meta-info {
+            display: flex;
+            gap: 20px;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        
+        /* Article Body */
+        .article-body {
+            padding: 30px;
+            font-size: 18px;
+            line-height: 1.8;
+            color: #444;
+        }
+        
+        .article-body p {
+            margin-bottom: 20px;
+        }
+        
+        .article-body h2 {
+            font-size: 24px;
+            margin: 30px 0 15px;
+            color: #333;
+        }
+        
+        .article-body img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+        
+        .sidebar h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .related-article {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .related-article:last-child {
+            border-bottom: none;
+        }
+        
+        .related-article a {
+            text-decoration: none;
+            color: #333;
+            font-size: 14px;
+            display: block;
+        }
+        
+        .related-article a:hover {
+            color: #4285f4;
+        }
+        
+        .related-meta {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+        
+        /* Loading/Error States */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            font-size: 18px;
+            color: #666;
+        }
+        
+        .error-page {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .error-page h1 {
+            font-size: 48px;
+            color: #e74c3c;
+            margin-bottom: 20px;
+        }
+        
+        .error-page p {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .error-page a {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #4285f4;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo-section">
+            <a href="/" class="logo">
+                <span class="logo-icon">📱</span>
+                <div>
+                    <div>PhoneVerse</div>
+                    <div class="tagline">Mobile Tech News</div>
+                </div>
+            </a>
         </div>
-    `;
-}
-</script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    </header>
+    
+    <!-- Navigation -->
+    <nav class="nav">
+        <ul class="nav-menu">
+            <li><a href="/">Home</a></li>
+            <li><a href="/#mobile-news">Mobile News</a></li>
+            <li><a href="/#reviews">Reviews</a></li>
+            <li><a href="/#android">Android</a></li>
+            <li><a href="/#iphone">iPhone</a></li>
+        </ul>
+    </nav>
+    
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Loading State -->
+        <div class="loading" id="loading">
+            📰 Loading article...
+        </div>
+        
+        <!-- Article Content (Hidden until loaded) -->
+        <article class="article-page" id="article-container" style="display: none;">
+            <div class="article-header">
+                <div class="featured-image">
+                    <img id="article-image" 
+                         src="https://source.unsplash.com/1344x768/?smartphone,technology" 
+                         alt="Article Image">
+                </div>
+                <div class="article-meta-overlay">
+                    <span class="category-badge" id="article-category">News</span>
+                    <h1 id="article-title">Loading...</h1>
+                    <div class="meta-info">
+                        <span id="article-date">📅 Just now</span>
+                        <span id="article-views">👁️ 0 views</span>
+                        <span id="article-author">✍️ Tech Editor</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="article-body" id="article-content">
+                <p>Loading content...</p>
+            </div>
+        </article>
+        
+        <!-- Sidebar (Related Articles) -->
+        <aside class="sidebar" id="sidebar" style="display: none;">
+            <h3>📰 Related Articles</h3>
+            <div id="related-articles"></div>
+        </aside>
+    </div>
+    
+    <!-- JavaScript -->
+    <script>
+        console.log('📰 Article page loaded');
+        
+        // Get slug from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const slug = urlParams.get('slug');
+        
+        if (!slug) {
+            console.error('❌ No slug in URL');
+            showError('Article Not Found', 'No article specified in URL');
+        } else {
+            console.log(`🔍 Loading article: ${slug}`);
+            loadArticle(slug);
+        }
+        
+        // Load article from API
+        async function loadArticle(slug) {
+            try {
+                console.log(`📡 Fetching article from API...`);
+                
+                // CORRECT endpoint: /api/articles/:slug (with 's')
+                const response = await fetch(`/api/articles/${slug}`);
+                
+                console.log(`📊 Response status: ${response.status}`);
+                
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        throw new Error('Article not found');
+                    }
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const article = await response.json();
+                console.log('✅ Article loaded:', article.title);
+                console.log('🖼️  Image URL:', article.featured_image);
+                
+                hideLoading();
+                renderArticle(article);
+                loadRelatedArticles(article.category);
+                
+            } catch (error) {
+                console.error('❌ Error loading article:', error);
+                hideLoading();
+                showError('Error Loading Article', error.message);
+            }
+        }
+        
+        // Render article to page
+        function renderArticle(article) {
+            // Show article container
+            document.getElementById('article-container').style.display = 'block';
+            
+            // Set title
+            document.title = `${article.title} - PhoneVerse`;
+            document.getElementById('article-title').textContent = article.title;
+            
+            // Set category
+            document.getElementById('article-category').textContent = article.category || 'News';
+            
+            // Set meta info
+            document.getElementById('article-date').textContent = '📅 ' + formatDate(article.published_at);
+            document.getElementById('article-views').textContent = '👁️ ' + (article.views || 0) + ' views';
+            document.getElementById('article-author').textContent = '✍️ ' + (article.author || 'Tech Editor');
+            
+            // Set content
+            document.getElementById('article-content').innerHTML = article.content;
+            
+            // Set featured image
+            const imageEl = document.getElementById('article-image');
+            const imageUrl = article.featured_image || 
+                            'https://source.unsplash.com/1344x768/?smartphone,technology';
+            
+            console.log(`🖼️  Setting image: ${imageUrl}`);
+            imageEl.src = imageUrl;
+            imageEl.alt = article.title;
+            
+            imageEl.onerror = function() {
+                console.error('❌ Image failed, using fallback');
+                this.src = 'https://source.unsplash.com/1344x768/?smartphone,technology';
+            };
+            
+            imageEl.onload = function() {
+                console.log('✅ Image loaded successfully');
+            };
+            
+            console.log('✅ Article rendered to page');
+        }
+        
+        // Load related articles
+        async function loadRelatedArticles(category) {
+            try {
+                const response = await fetch(`/api/category/${category}?limit=5&_=${Date.now()}`);
+                const articles = await response.json();
+                
+                if (articles.length > 1) {
+                    document.getElementById('sidebar').style.display = 'block';
+                    
+                    const container = document.getElementById('related-articles');
+                    container.innerHTML = articles.slice(0, 5).map(article => `
+                        <div class="related-article">
+                            <a href="/article.html?slug=${article.slug}">
+                                ${escapeHtml(article.title)}
+                            </a>
+                            <div class="related-meta">
+                                ${formatDate(article.published_at)} • ${article.views || 0} views
+                            </div>
+                        </div>
+                    `).join('');
+                    
+                    console.log('✅ Related articles loaded');
+                }
+            } catch (error) {
+                console.log('Could not load related articles');
+            }
+        }
+        
+        // Format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diff = now - date;
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+            
+            if (minutes < 60) return `${minutes}m ago`;
+            if (hours < 24) return `${hours}h ago`;
+            if (days === 0) return 'Today';
+            if (days === 1) return 'Yesterday';
+            return `${days}d ago`;
+        }
+        
+        // Escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Hide loading
+        function hideLoading() {
+            const loading = document.getElementById('loading');
+            if (loading) {
+                loading.style.display = 'none';
+            }
+        }
+        
+        // Show error
+        function showError(title, message) {
+            hideLoading();
+            document.body.innerHTML = `
+                <div class="error-page">
+                    <h1>😞 ${escapeHtml(title)}</h1>
+                    <p>${escapeHtml(message)}</p>
+                    <a href="/">← Back to Home</a>
+                </div>
+            `;
+        }
+    </script>
 </body>
-
 </html>
