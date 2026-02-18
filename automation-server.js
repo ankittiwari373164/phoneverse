@@ -38,7 +38,7 @@ async function connectDB() {
             user: CONFIG.DB_USER,
             password: CONFIG.DB_PASS,
             database: CONFIG.DB_NAME,
-            ssl: isProduction ? { rejectUnauthorized: true } : false,
+            ssl: useSSL ? { rejectUnauthorized: false } : false,
             connectTimeout: 60000
         });
 
