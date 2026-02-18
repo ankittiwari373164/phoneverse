@@ -1,29 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="pageTitle">Loading... | PhoneVerse</title>
-    <meta name="description" id="pageDescription" content="Read the latest mobile technology news">
-    <link rel="stylesheet" href="/css/style.css">
+    <title>Article - PhoneVerse</title>
+    <link rel="stylesheet" href="/css/styles.css">
 </head>
+
 <body>
+    <!-- Your header/nav here -->
     <!-- Header (Same as homepage) -->
     <header class="header">
         <div class="container">
             <div class="header-top">
-                <div class="logo">
-                    <a href="/">
+                <div class="logo"> <a href="/">
                         <h1>📱 PhoneVerse</h1>
                         <p>Mobile Tech News</p>
-                    </a>
-                </div>
-                <button class="search-btn" onclick="toggleSearch()">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    </a> </div> <button class="search-btn" onclick="toggleSearch()"> <svg width="20" height="20"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <circle cx="11" cy="11" r="8"></circle>
                         <path d="m21 21-4.35-4.35"></path>
-                    </svg>
-                </button>
+                    </svg> </button>
             </div>
             <nav class="main-nav">
                 <ul>
@@ -35,133 +33,110 @@
                 </ul>
             </nav>
         </div>
-    </header>
-
-    <!-- Search Overlay -->
-    <div class="search-overlay" id="searchOverlay">
-        <button class="close-search" onclick="toggleSearch()">✕</button>
-        <div class="search-container">
-            <input type="text" id="searchInput" placeholder="Search articles...">
+    </header> <!-- Search Overlay -->
+    <div class="search-overlay" id="searchOverlay"> <button class="close-search" onclick="toggleSearch()">✕</button>
+        <div class="search-container"> <input type="text" id="searchInput" placeholder="Search articles...">
             <div class="search-results" id="searchResults"></div>
         </div>
     </div>
 
-    <!-- Article Content -->
-    <article class="article-page">
-        <div class="container">
-            <div class="article-layout">
-                <!-- Main Content -->
-                <div class="article-main">
-                    <!-- Breadcrumb -->
-                    <nav class="breadcrumb" id="breadcrumb">
-                        <a href="/">Home</a>
-                        <span>/</span>
-                        <span>Loading...</span>
-                    </nav>
+    <article id="article-container" class="article-page">
+        <div class="article-header">
+            <!-- Featured Image - This is what needs to be fixed -->
+            <img id="article-image" src="https://source.unsplash.com/1344x768/?smartphone,technology"
+                alt="Article Image" style="width: 100%; height: auto; max-height: 500px; object-fit: cover;">
 
-                    <!-- Article Header -->
-                    <div class="article-header" id="articleHeader">
-                        <div class="loading">Loading article...</div>
-                    </div>
-
-                    <!-- Article Body -->
-                    <div class="article-content" id="articleBody">
-                        <!-- Content loads here -->
-                    </div>
-
-                    <!-- Tags -->
-                    <div class="article-tags" id="articleTags"></div>
-
-                    <!-- Share Buttons -->
-                    <div class="share-section">
-                        <h3>Share This Article</h3>
-                        <div class="share-buttons">
-                            <button onclick="shareTwitter()" class="share-btn twitter">
-                                <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"></path>
-                                </svg>
-                                Twitter
-                            </button>
-                            <button onclick="shareFacebook()" class="share-btn facebook">
-                                <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"></path>
-                                </svg>
-                                Facebook
-                            </button>
-                            <button onclick="shareWhatsApp()" class="share-btn whatsapp">
-                                <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"></path>
-                                </svg>
-                                WhatsApp
-                            </button>
-                            <button onclick="copyLink()" class="share-btn copy">
-                                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"></path>
-                                    <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"></path>
-                                </svg>
-                                Copy Link
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Related Articles -->
-                    <div class="related-articles">
-                        <h3>Related Articles</h3>
-                        <div class="related-grid" id="relatedArticles">
-                            <div class="loading">Loading related articles...</div>
-                        </div>
-                    </div>
+            <div class="article-meta">
+                <span id="article-category"></span>
+                <h1 id="article-title"></h1>
+                <div class="meta-info">
+                    <span id="article-date"></span>
+                    <span id="article-views"></span>
+                    <span id="article-author"></span>
                 </div>
-
-                <!-- Sidebar -->
-                <aside class="article-sidebar">
-                    <!-- Trending Widget -->
-                    <div class="sidebar-widget">
-                        <h3>📈 Trending</h3>
-                        <div id="trendingSidebar" class="trending-list">
-                            <div class="loading">Loading...</div>
-                        </div>
-                    </div>
-
-                    <!-- Categories Widget -->
-                    <div class="sidebar-widget">
-                        <h3>📂 Categories</h3>
-                        <ul class="category-list">
-                            <li><a href="/category.html?cat=mobile-news">📱 Mobile News</a></li>
-                            <li><a href="/category.html?cat=reviews">⭐ Reviews</a></li>
-                            <li><a href="/category.html?cat=android-updates">🤖 Android</a></li>
-                            <li><a href="/category.html?cat=iphone-news">🍎 iPhone</a></li>
-                            <li><a href="/category.html?cat=comparisons">⚖️ Compare</a></li>
-                            <li><a href="/category.html?cat=guides">📚 Guides</a></li>
-                        </ul>
-                    </div>
-
-                    <!-- Newsletter Widget -->
-                    <div class="sidebar-widget newsletter-widget">
-                        <h3>📧 Newsletter</h3>
-                        <p>Get latest updates</p>
-                        <form onsubmit="subscribeNewsletter(event)">
-                            <input type="email" placeholder="Your email" required>
-                            <button type="submit">Subscribe</button>
-                        </form>
-                    </div>
-                </aside>
             </div>
         </div>
+
+        <div id="article-content" class="article-body"></div>
     </article>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-bottom">
-                <p>&copy; 2026 PhoneVerse. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
+    <!-- CRITICAL: This script loads the article data -->
+    <script>
+        // Get article slug from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const slug = urlParams.get('slug');
 
-    <button class="back-to-top" id="backToTop" onclick="scrollToTop()">↑</button>
+        if (!slug) {
+            document.body.innerHTML = '<h1>Article not found</h1>';
+        } else {
+            loadArticle(slug);
+        }
 
-    <script src="/js/common.js"></script>
-    <script src="/js/article.js"></script>
+        async function loadArticle(slug) {
+            try {
+                // Fetch article data
+                const response = await fetch(`/api/article/${slug}`);
+
+                if (!response.ok) {
+                    throw new Error('Article not found');
+                }
+
+                const article = await response.json();
+
+                console.log('📰 Article loaded:', article.title);
+                console.log('🖼️  Featured image URL:', article.featured_image);
+
+                // Set title
+                document.getElementById('article-title').textContent = article.title;
+                document.title = article.title + ' - PhoneVerse';
+
+                // Set category
+                document.getElementById('article-category').textContent = article.category;
+
+                // Set meta info
+                document.getElementById('article-date').textContent = formatDate(article.published_at);
+                document.getElementById('article-views').textContent = (article.views || 0) + ' views';
+                document.getElementById('article-author').textContent = 'Tech Editor';
+
+                // Set content
+                document.getElementById('article-content').innerHTML = article.content;
+
+                // ✅ THIS IS THE KEY FIX - Set the featured image from database
+                const imageElement = document.getElementById('article-image');
+                if (article.featured_image && article.featured_image.startsWith('http')) {
+                    imageElement.src = article.featured_image;
+                    console.log('✅ Image set to:', article.featured_image);
+                } else {
+                    // Fallback
+                    imageElement.src = 'https://source.unsplash.com/1344x768/?smartphone,technology';
+                    console.log('⚠️  Using fallback image');
+                }
+
+                imageElement.onerror = function () {
+                    console.error('❌ Image failed to load, using fallback');
+                    this.src = 'https://source.unsplash.com/1344x768/?smartphone,technology';
+                };
+
+            } catch (error) {
+                console.error('Error loading article:', error);
+                document.getElementById('article-container').innerHTML =
+                    '<h1>Error loading article</h1><p>' + error.message + '</p>';
+            }
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diff = now - date;
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+
+            if (minutes < 60) return minutes + 'm ago';
+            if (hours < 24) return hours + 'h ago';
+            return days + 'd ago';
+        }
+    </script>
 </body>
+
 </html>

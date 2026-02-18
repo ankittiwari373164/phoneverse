@@ -215,5 +215,78 @@
 
 
     <script src="/js/main.js"></script>
+<!-- Add this script to your index.html, right before </body> -->
+
+<script>
+    // Load articles on homepage
+    async function loadArticles(category = 'all') {
+        try {
+            const url = `/api/articles?category=${category}&_=${Date.now()}`;
+            const response = await fetch(url);
+            const articles = await response.json();
+            
+            console.log(`📰 Loaded ${articles.length} articles`);
+            
+            const container = document.getElementById('articles-container');
+            if (!container) return;
+            
+            if (articles.length === 0) {
+                container.innerHTML = '<p>No articles found</p>';
+                return;
+            }
+            
+            // Render articles
+            container.innerHTML = articles.map(article => {
+                // ✅ KEY FIX: Use database featured_image
+                const imageUrl = article.featured_image || 
+                                'https://source.unsplash.com/1344x768/?smartphone,technology';
+                
+                console.log(`Article: ${article.title.substring(0, 30)}... | Image: ${imageUrl}`);
+                
+                return `
+                    <article class="article-card">
+                        <a href="/article.html?slug=${article.slug}">
+                            <div class="article-image">
+                                <img src="${imageUrl}" 
+                                     alt="${article.title}"
+                                     loading="lazy"
+                                     onerror="this.src='https://source.unsplash.com/1344x768/?smartphone,technology'">
+                            </div>
+                            <div class="article-content">
+                                <span class="category-badge">${article.category}</span>
+                                <h3>${article.title}</h3>
+                                <div class="article-meta">
+                                    <span>${formatTimeAgo(article.published_at)}</span>
+                                    <span>• ${article.views || 0} views</span>
+                                </div>
+                            </div>
+                        </a>
+                    </article>
+                `;
+            }).join('');
+            
+            console.log('✅ Articles rendered successfully');
+            
+        } catch (error) {
+            console.error('❌ Error loading articles:', error);
+        }
+    }
+    
+    function formatTimeAgo(dateString) {
+        const date = new Date(dateString);
+        const now = new Date();
+        const seconds = Math.floor((now - date) / 1000);
+        
+        if (seconds < 60) return 'Just now';
+        if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+        if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+        return `${Math.floor(seconds / 86400)}d ago`;
+    }
+    
+    // Load on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        loadArticles();
+    });
+</script>
 </body>
 </html>
