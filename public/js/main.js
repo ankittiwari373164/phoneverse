@@ -61,9 +61,9 @@ function displayHero() {
     
     heroSection.innerHTML = `
         <a href="/article.html?slug=${featured.slug}" class="hero-main">
-            <img src="${featured.featured_image || '/images/placeholder.png'}" 
+            <img src="${article.featured_image}" 
                  alt="${escapeHtml(featured.title)}"
-                 onerror="this.src='/images/placeholder.png'">
+                  onerror="this.src='https://source.unsplash.com/1344x768/?smartphone,technology'">
             <div class="hero-content">
                 <span class="hero-category">${formatCategory(featured.category)}</span>
                 <h2>${escapeHtml(featured.title)}</h2>
@@ -75,10 +75,7 @@ function displayHero() {
         </a>
         <div class="hero-sidebar">
             ${sidebar.map(article => `
-                <a href="/article.html?slug=${article.slug}" class="hero-card">
-                    <img src="${article.featured_image || '/images/placeholder.png'}" 
-                         alt="${escapeHtml(article.title)}"
-                         onerror="this.src='/images/placeholder.png'">
+                 onerror="this.src='https://source.unsplash.com/1344x768/?smartphone,technology'">
                     <div class="hero-card-content">
                         <h3>${escapeHtml(article.title)}</h3>
                         <div class="hero-card-meta">
@@ -114,9 +111,7 @@ function displayArticles() {
     grid.innerHTML = articles.map(article => `
         <a href="/article.html?slug=${article.slug}" class="article-card">
             <div class="article-image">
-                <img src="${article.featured_image || '/images/placeholder.png'}" 
-                     alt="${escapeHtml(article.title)}"
-                     onerror="this.src='/images/placeholder.png'">
+                 onerror="this.src='https://source.unsplash.com/1344x768/?smartphone,technology'">
                 <span class="article-category">${formatCategory(article.category)}</span>
             </div>
             <div class="article-body">
@@ -148,9 +143,7 @@ function displayTrending() {
     
     grid.innerHTML = trending.map(article => `
         <a href="/article.html?slug=${article.slug}" class="trending-card">
-            <img src="${article.featured_image || '/images/placeholder.png'}" 
-                 alt="${escapeHtml(article.title)}"
-                 onerror="this.src='/images/placeholder.png'">
+             onerror="this.src='https://source.unsplash.com/1344x768/?smartphone,technology'">
             <div class="trending-card-body">
                 <h4>${escapeHtml(article.title)}</h4>
                 <div class="trending-card-meta">
