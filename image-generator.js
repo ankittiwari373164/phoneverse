@@ -22,13 +22,38 @@ class ImageGenerator {
         const filepath = path.join(this.outputDir, filename);
 
         try {
+            // Try to generate local image
             await this.generateLocalImage(title, category, filepath);
             console.log(`✅ Image created: ${filename}`);
-            return `/images/uploads/${filename}`;
+            
+            // Return local path if file exists
+            if (fs.existsSync(filepath)) {
+                return `/images/uploads/${filename}`;
+            }
+            
+            // Fallback to Unsplash placeholder if local generation failed
+            return this.getUnsplashPlaceholder(category);
         } catch (error) {
             console.error('❌ Image generation failed:', error.message);
-            return '/images/placeholder.png';
+            // Return category-specific Unsplash image
+            return this.getUnsplashPlaceholder(category);
         }
+    }
+
+    getUnsplashPlaceholder(category) {
+        // Use Unsplash Source for free placeholder images
+        const categories = {
+            'mobile-news': 'phone,technology',
+            'reviews': 'smartphone,device',
+            'android-updates': 'android,mobile',
+            'iphone-news': 'iphone,apple',
+            'comparisons': 'phones,comparison',
+            'guides': 'tutorial,tech'
+        };
+        
+        const query = categories[category] || 'smartphone,technology';
+        // Unsplash Source provides free random images
+        return `https://source.unsplash.com/1344x768/?${query}`;
     }
 
     async generateLocalImage(title, category, filepath) {
