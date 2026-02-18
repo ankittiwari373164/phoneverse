@@ -8,6 +8,7 @@ const cookieParser = require('cookie-parser');
 const { FreeNewsAggregator } = require('./free-news-scraper');
 const ImageGenerator = require('./image-generator');
 const GroqRewriter = require('./groq-rewriter');
+const GeminiRewriter = require('./gemini-rewriter');
 const { AuthSystem, authenticateUser, requireAdmin } = require('./auth-system');
 
 // ==================== CONFIGURATION ====================
@@ -19,6 +20,7 @@ const CONFIG = {
     PORT: process.env.PORT || 3000,
     CHECK_NEWS_EVERY: process.env.CHECK_NEWS_EVERY || '*/10 * * * *',
     GROQ_API_KEY: process.env.GROQ_API_KEY,
+    GEMINI_API_KEY: process.env.GEMINI_API_KEY,
     AUTO_APPROVE: process.env.AUTO_APPROVE === 'true',
     NODE_ENV: process.env.NODE_ENV || 'development'
 };
@@ -30,26 +32,20 @@ let authSystem;
 async function connectDB() {
     try {
         const isProduction = CONFIG.NODE_ENV === 'production';
-        const useSSL = process.env.DB_SSL === 'true';
 
         db = await mysql.createConnection({
             host: CONFIG.DB_HOST,
-            port: parseInt(process.env.DB_PORT) || 3306,
             user: CONFIG.DB_USER,
             password: CONFIG.DB_PASS,
             database: CONFIG.DB_NAME,
-            ssl: useSSL ? { rejectUnauthorized: false } : false,
-            connectTimeout: 60000,
-            // Clever Cloud specific settings
-            multipleStatements: false,
-            timezone: '+00:00'
+            ssl: isProduction ? { rejectUnauthorized: true } : false,
+            connectTimeout: 60000
         });
 
-        console.log('✅ Database connected (Clever Cloud MySQL)');
+        console.log('✅ Database connected');
         await db.execute('SELECT 1');
 
-        // Keep connection alive every 25 seconds
-        // (Clever Cloud disconnects idle connections after 30s)
+        // Keep DB connection alive every 30 seconds
         setInterval(async () => {
             try {
                 await db.execute('SELECT 1');
@@ -61,7 +57,7 @@ async function connectDB() {
                     console.error('❌ Reconnect failed:', reconnectErr.message);
                 }
             }
-        }, 25000);
+        }, 30000);
 
     } catch (error) {
         console.error('❌ Database connection failed:', error.message);
@@ -289,11 +285,15 @@ class AutomationEngine {
     constructor() {
         this.newsAggregator = new FreeNewsAggregator();
 
-        if (CONFIG.GROQ_API_KEY && process.env.USE_GROQ === 'true') {
+        // Priority: Gemini > Groq > Basic
+        if (CONFIG.GEMINI_API_KEY && process.env.USE_GEMINI === 'true') {
+            this.contentRewriter = new GeminiRewriter(CONFIG.GEMINI_API_KEY);
+            console.log('✅ Using Gemini AI (FREE) for content rewriting');
+        } else if (CONFIG.GROQ_API_KEY && process.env.USE_GROQ === 'true') {
             this.contentRewriter = new GroqRewriter(CONFIG.GROQ_API_KEY);
             console.log('✅ Using Groq AI (FREE) for content rewriting');
         } else {
-            console.log('⚠️  Groq not configured - using basic rewriter');
+            console.log('⚠️  No AI configured - using basic rewriter');
             this.contentRewriter = {
                 rewriteWithPersonality: async (title, content, category) => ({
                     title: title,

@@ -4,13 +4,13 @@
   "description": "PhoneVerse News Automation System",
   "main": "automation-server.js",
   "scripts": {
-    "start": "node automation-server.js",
-    "dev": "nodemon automation-server.js"
+    "start": "node automation-server.js"
   },
   "engines": {
     "node": ">=18.0.0"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.21.0",
     "axios": "^1.6.0",
     "bcrypt": "^5.1.1",
     "canvas": "^2.11.2",
