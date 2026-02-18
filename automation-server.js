@@ -955,6 +955,20 @@ app.delete('/api/admin/article/:id', authenticateUser, requireAdmin, async (req,
     }
 });
 
+// Clear news sources tracking (reset duplicates)
+app.post('/api/admin/clear-sources', authenticateUser, requireAdmin, async (req, res) => {
+    try {
+        const [result] = await db.execute('DELETE FROM news_sources');
+        res.json({ 
+            success: true, 
+            message: `Cleared ${result.affectedRows} tracked sources. Articles can now be reprocessed.`,
+            cleared: result.affectedRows
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // Manual article submission (admin)
 app.post('/api/admin/submit', authenticateUser, requireAdmin, upload.single('image'), async (req, res) => {
     try {
