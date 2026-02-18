@@ -307,6 +307,20 @@ class AutomationEngine {
         this.processing = false;
     }
 
+    async trackSkippedSource(sourceUrl, title) {
+        if (!sourceUrl || sourceUrl.trim() === '') return;
+        
+        try {
+            await db.execute(
+                `INSERT IGNORE INTO news_sources (original_url, original_title, processed) 
+                 VALUES (?, ?, TRUE)`,
+                [sourceUrl, title.substring(0, 500)]
+            );
+        } catch (error) {
+            // Ignore errors - this is just tracking
+        }
+    }
+
     async processNews() {
         if (this.processing) {
             console.log('⏸️  Already processing, skipping...');
@@ -347,6 +361,19 @@ class AutomationEngine {
 
                 try {
                     console.log(`\n[${processedCount}/${newsItems.length}] Processing: ${news.originalTitle.substring(0, 60)}...`);
+
+                    // Check for duplicates FIRST before any processing
+                    const isDup = await this.publisher.isDuplicate(news.originalTitle, news.sourceUrl);
+                    if (isDup) {
+                        skippedCount++;
+                        console.log(`⏭️  Duplicate skipped: ${news.originalTitle.substring(0, 60)}...`);
+                        
+                        // IMPORTANT: Track this URL so we don't process it again
+                        await this.trackSkippedSource(news.sourceUrl, news.originalTitle);
+                        
+                        await this.sleep(500); // Small delay
+                        continue;
+                    }
 
                     const rewritten = await this.contentRewriter.rewriteWithPersonality(
                         news.originalTitle,
