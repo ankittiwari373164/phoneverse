@@ -285,19 +285,23 @@ class AutomationEngine {
     constructor() {
         this.newsAggregator = new FreeNewsAggregator();
 
-        if (CONFIG.OPENROUTER_API_KEY) {
-            this.contentRewriter = new OpenRouterRewriter(CONFIG.OPENROUTER_API_KEY);
-            console.log('✅ Using OpenRouter AI (FREE FOREVER) for content rewriting');
-        } else {
-            console.log('⚠️  No AI configured - using basic rewriter');
-            this.contentRewriter = {
-                rewriteWithPersonality: async (title, content, category) => ({
+        // Use original content (no AI rewriting)
+        console.log('✅ Using original content (no AI rewriting needed)');
+        this.contentRewriter = {
+            rewriteWithPersonality: async (title, content, category) => {
+                // Format content as HTML
+                const paragraphs = content.split('\n\n').filter(p => p.trim());
+                const htmlContent = paragraphs.length > 0 
+                    ? paragraphs.map(p => `<p>${p.trim()}</p>`).join('\n')
+                    : `<p>${content}</p>`;
+                
+                return {
                     title: title,
-                    content: `<p>${content}</p>`,
-                    wordCount: content.split(' ').length
-                })
-            };
-        }
+                    content: htmlContent,
+                    wordCount: content.split(/\s+/).length
+                };
+            }
+        };
 
         this.imageGenerator = new ImageGenerator();
         this.publisher = new ArticlePublisher();
