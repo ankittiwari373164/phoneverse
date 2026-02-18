@@ -62,81 +62,173 @@
 
     <!-- CRITICAL: This script loads the article data -->
     <script>
-        // Get article slug from URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const slug = urlParams.get('slug');
+console.log('📰 Article page loaded');
 
-        if (!slug) {
-            document.body.innerHTML = '<h1>Article not found</h1>';
-        } else {
-            loadArticle(slug);
-        }
+// Get slug from URL
+const urlParams = new URLSearchParams(window.location.search);
+const slug = urlParams.get('slug');
 
-        async function loadArticle(slug) {
-            try {
-                // Fetch article data
-                const response = await fetch(`/api/article/${slug}`);
+if (!slug) {
+    console.error('❌ No slug in URL');
+    showError('Article not found', 'No article specified');
+} else {
+    console.log(`🔍 Loading article: ${slug}`);
+    loadArticle(slug);
+}
 
-                if (!response.ok) {
-                    throw new Error('Article not found');
-                }
-
-                const article = await response.json();
-
-                console.log('📰 Article loaded:', article.title);
-                console.log('🖼️  Featured image URL:', article.featured_image);
-
-                // Set title
-                document.getElementById('article-title').textContent = article.title;
-                document.title = article.title + ' - PhoneVerse';
-
-                // Set category
-                document.getElementById('article-category').textContent = article.category;
-
-                // Set meta info
-                document.getElementById('article-date').textContent = formatDate(article.published_at);
-                document.getElementById('article-views').textContent = (article.views || 0) + ' views';
-                document.getElementById('article-author').textContent = 'Tech Editor';
-
-                // Set content
-                document.getElementById('article-content').innerHTML = article.content;
-
-                // ✅ THIS IS THE KEY FIX - Set the featured image from database
-                const imageElement = document.getElementById('article-image');
-                if (article.featured_image && article.featured_image.startsWith('http')) {
-                    imageElement.src = article.featured_image;
-                    console.log('✅ Image set to:', article.featured_image);
-                } else {
-                    // Fallback
-                    imageElement.src = 'https://source.unsplash.com/1344x768/?smartphone,technology';
-                    console.log('⚠️  Using fallback image');
-                }
-
-                imageElement.onerror = function () {
-                    console.error('❌ Image failed to load, using fallback');
-                    this.src = 'https://source.unsplash.com/1344x768/?smartphone,technology';
-                };
-
-            } catch (error) {
-                console.error('Error loading article:', error);
-                document.getElementById('article-container').innerHTML =
-                    '<h1>Error loading article</h1><p>' + error.message + '</p>';
+async function loadArticle(slug) {
+    try {
+        console.log(`📡 Fetching article from API...`);
+        
+        // ✅ CORRECT endpoint: /api/articles/:slug (with 's')
+        const response = await fetch(`/api/articles/${slug}`);
+        
+        console.log(`📊 Response status: ${response.status}`);
+        
+        if (!response.ok) {
+            if (response.status === 404) {
+                throw new Error('Article not found');
             }
+            throw new Error(`HTTP ${response.status}`);
         }
+        
+        const article = await response.json();
+        console.log('✅ Article loaded:', article.title);
+        console.log('🖼️  Image URL:', article.featured_image);
+        
+        renderArticle(article);
+        
+    } catch (error) {
+        console.error('❌ Error loading article:', error);
+        showError('Error Loading Article', error.message);
+    }
+}
 
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            const now = new Date();
-            const diff = now - date;
-            const minutes = Math.floor(diff / 60000);
-            const hours = Math.floor(diff / 3600000);
-            const days = Math.floor(diff / 86400000);
+function renderArticle(article) {
+    // Set title
+    document.title = `${article.title} - PhoneVerse`;
+    
+    const titleEl = document.getElementById('article-title') || 
+                   document.querySelector('h1');
+    if (titleEl) {
+        titleEl.textContent = article.title;
+    }
+    
+    // Set category
+    const categoryEl = document.getElementById('article-category') || 
+                      document.querySelector('.category-badge');
+    if (categoryEl) {
+        categoryEl.textContent = article.category;
+    }
+    
+    // Set meta info
+    const dateEl = document.getElementById('article-date');
+    if (dateEl) {
+        dateEl.textContent = formatDate(article.published_at);
+    }
+    
+    const viewsEl = document.getElementById('article-views');
+    if (viewsEl) {
+        viewsEl.textContent = `${article.views || 0} views`;
+    }
+    
+    const authorEl = document.getElementById('article-author');
+    if (authorEl) {
+        authorEl.textContent = article.author || 'Tech Editor';
+    }
+    
+    // Set content
+    const contentEl = document.getElementById('article-content') || 
+                     document.querySelector('.article-body');
+    if (contentEl) {
+        contentEl.innerHTML = article.content;
+    }
+    
+    // ✅ Set featured image
+    const imageEl = document.getElementById('article-image') || 
+                   document.querySelector('.featured-image img') ||
+                   document.querySelector('article img');
+    
+    if (imageEl) {
+        const imageUrl = article.featured_image || 
+                        'https://source.unsplash.com/1344x768/?smartphone,technology';
+        
+        console.log(`🖼️  Setting image: ${imageUrl}`);
+        imageEl.src = imageUrl;
+        imageEl.alt = article.title;
+        imageEl.style.display = 'block';
+        
+        imageEl.onerror = function() {
+            console.error('❌ Image failed, using fallback');
+            this.src = 'https://source.unsplash.com/1344x768/?smartphone,technology';
+        };
+        
+        imageEl.onload = function() {
+            console.log('✅ Image loaded successfully');
+        };
+    } else {
+        console.warn('⚠️  No image element found');
+    }
+    
+    console.log('✅ Article rendered to page');
+}
 
-            if (minutes < 60) return minutes + 'm ago';
-            if (hours < 24) return hours + 'h ago';
-            return days + 'd ago';
-        }
-    </script>
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diff = now - date;
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+    
+    if (minutes < 60) return `${minutes}m ago`;
+    if (hours < 24) return `${hours}h ago`;
+    return `${days}d ago`;
+}
+
+function showError(title, message) {
+    document.body.innerHTML = `
+        <div style="padding: 40px; text-align: center;">
+            <h1>${title}</h1>
+            <p>${message}</p>
+            <a href="/" style="color: #4285f4;">← Back to Home</a>
+        </div>
+    `;
+}
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </body>
 
 </html>
