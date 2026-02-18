@@ -7,8 +7,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const { FreeNewsAggregator } = require('./free-news-scraper');
 const ImageGenerator = require('./image-generator');
-const GroqRewriter = require('./groq-rewriter');
-const GeminiRewriter = require('./gemini-rewriter');
+const OpenRouterRewriter = require('./openrouter-rewriter');
 const { AuthSystem, authenticateUser, requireAdmin } = require('./auth-system');
 
 // ==================== CONFIGURATION ====================
@@ -19,8 +18,7 @@ const CONFIG = {
     DB_NAME: process.env.DB_NAME || 'phone_news_db',
     PORT: process.env.PORT || 3000,
     CHECK_NEWS_EVERY: process.env.CHECK_NEWS_EVERY || '*/10 * * * *',
-    GROQ_API_KEY: process.env.GROQ_API_KEY,
-    GEMINI_API_KEY: process.env.GEMINI_API_KEY,
+    OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY,
     AUTO_APPROVE: process.env.AUTO_APPROVE === 'true',
     NODE_ENV: process.env.NODE_ENV || 'development'
 };
@@ -287,13 +285,9 @@ class AutomationEngine {
     constructor() {
         this.newsAggregator = new FreeNewsAggregator();
 
-        // Priority: Gemini > Groq > Basic
-        if (CONFIG.GEMINI_API_KEY && process.env.USE_GEMINI === 'true') {
-            this.contentRewriter = new GeminiRewriter(CONFIG.GEMINI_API_KEY);
-            console.log('✅ Using Gemini AI (FREE) for content rewriting');
-        } else if (CONFIG.GROQ_API_KEY && process.env.USE_GROQ === 'true') {
-            this.contentRewriter = new GroqRewriter(CONFIG.GROQ_API_KEY);
-            console.log('✅ Using Groq AI (FREE) for content rewriting');
+        if (CONFIG.OPENROUTER_API_KEY) {
+            this.contentRewriter = new OpenRouterRewriter(CONFIG.OPENROUTER_API_KEY);
+            console.log('✅ Using OpenRouter AI (FREE FOREVER) for content rewriting');
         } else {
             console.log('⚠️  No AI configured - using basic rewriter');
             this.contentRewriter = {
