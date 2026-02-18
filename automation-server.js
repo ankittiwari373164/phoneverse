@@ -7,7 +7,6 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const { FreeNewsAggregator } = require('./free-news-scraper');
 const ImageGenerator = require('./image-generator');
-const OpenRouterRewriter = require('./openrouter-rewriter');
 const { AuthSystem, authenticateUser, requireAdmin } = require('./auth-system');
 
 // ==================== CONFIGURATION ====================
