@@ -315,7 +315,7 @@
             container.innerHTML = articles.map(article => {
                 // Use featured_image from database
                 const imageUrl = article.featured_image || 
-                                'https://source.unsplash.com/1344x768/?smartphone,technology';
+                                'https://picsum.photos/1344/768?random=1';
                 
                 console.log(`📰 ${article.title.substring(0, 40)}... | 🖼️ ${imageUrl.substring(0, 50)}...`);
                 
@@ -326,7 +326,7 @@
                                 <img src="${imageUrl}" 
                                      alt="${escapeHtml(article.title)}"
                                      loading="lazy"
-                                     onerror="this.onerror=null; this.src='https://source.unsplash.com/1344x768/?smartphone,technology';">
+                                     onerror="this.onerror=null; this.src='https://picsum.photos/1344/768?random=1';">
                             </div>
                             <div class="article-content">
                                 <span class="category-badge">${escapeHtml(article.category || 'News')}</span>

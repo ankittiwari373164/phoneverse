@@ -289,7 +289,7 @@
             <div class="article-header">
                 <div class="featured-image">
                     <img id="article-image" 
-                         src="https://source.unsplash.com/1344x768/?smartphone,technology" 
+                         src="https://picsum.photos/1344/768?random=1" 
                          alt="Article Image">
                 </div>
                 <div class="article-meta-overlay">
@@ -386,7 +386,7 @@
             // Set featured image
             const imageEl = document.getElementById('article-image');
             const imageUrl = article.featured_image || 
-                            'https://source.unsplash.com/1344x768/?smartphone,technology';
+                            'https://picsum.photos/1344/768?random=1';
             
             console.log(`🖼️  Setting image: ${imageUrl}`);
             imageEl.src = imageUrl;
@@ -394,7 +394,7 @@
             
             imageEl.onerror = function() {
                 console.error('❌ Image failed, using fallback');
-                this.src = 'https://source.unsplash.com/1344x768/?smartphone,technology';
+                this.src = 'https://picsum.photos/1344/768?random=2';
             };
             
             imageEl.onload = function() {

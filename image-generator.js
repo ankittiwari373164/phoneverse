@@ -14,14 +14,33 @@ class ImageGenerator {
 
     /**
      * Get a featured image for an article
-     * Uses Unsplash for topic-specific, relevant images
+     * Uses Picsum Photos - truly free forever, no rate limits
      */
     async createFeaturedImage(title, category) {
-        // Use Unsplash for topic-specific images
-        const topic = this.getCategoryTopic(category, title);
-        const url = `https://source.unsplash.com/1344x768/?${topic}`;
-        console.log(`✅ Image for "${title.substring(0, 40)}..." → ${topic}`);
+        // Generate a unique but consistent image ID from article title
+        const imageId = this.getImageIdFromTitle(title);
+        
+        // Picsum Photos: 1000+ free images, works forever
+        const url = `https://picsum.photos/1344/768?random=${imageId}`;
+        
+        console.log(`✅ Image for "${title.substring(0, 40)}..." → Picsum ID ${imageId}`);
         return url;
+    }
+
+    /**
+     * Generate a consistent image ID from article title
+     * Same title = same image (for consistency)
+     * Range: 1-1000 (Picsum has 1000+ images)
+     */
+    getImageIdFromTitle(title) {
+        let hash = 0;
+        for (let i = 0; i < title.length; i++) {
+            const char = title.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash; // Convert to 32bit integer
+        }
+        // Return number between 1-1000
+        return Math.abs(hash % 1000) + 1;
     }
 
     /**
